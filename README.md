@@ -13,7 +13,9 @@ A python client for osm orchestration
 Set the OSM_HOSTNAME variable to the host of the osm server.
 
 Example
-    export OSM_HOSTNAME=<hostname>:8008
+```bash
+localhost$ export OSM_HOSTNAME=<hostname>:8008
+```
 
 # Examples 
 
