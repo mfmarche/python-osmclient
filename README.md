@@ -4,7 +4,8 @@ A python client for osm orchestration
 # Installation
 
 ## Install dependencies
-    sudo apt-get install pycurl python-dev libcurl4-gnutls-dev
+    sudo apt-get install python-dev libcurl4-gnutls-dev python-pip libgnutls-dev    
+    sudo pip install pycurl
 
 ## Install python-osmclient
     sudo pip install git+https://github.com/mfmarche/python-osmclient
