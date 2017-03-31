@@ -60,6 +60,54 @@ class OsmAPI():
           return resp
         return {'nsd:nsd': []}
 
+    def get_config_agents(self):
+        data = BytesIO()
+        curl_cmd=self.get_curl_cmd('api/config/config-agent')
+        curl_cmd.setopt(pycurl.HTTPGET,1)
+        curl_cmd.setopt(pycurl.WRITEFUNCTION, data.write)
+        curl_cmd.perform() 
+        curl_cmd.close()
+        if data.getvalue():
+          resp = json.loads(data.getvalue().decode())
+          if 'rw-config-agent:config-agent' in resp:
+            return resp['rw-config-agent:config-agent']['account']
+        return list()
+
+    def delete_config_agent(self,name):
+        data = BytesIO()
+        curl_cmd=self.get_curl_cmd('api/config/config-agent/account/'+name)
+        curl_cmd.setopt(pycurl.CUSTOMREQUEST, "DELETE")
+        curl_cmd.setopt(pycurl.WRITEFUNCTION, data.write)
+        curl_cmd.perform() 
+        curl_cmd.close()
+        resp = json.loads(data.getvalue().decode())
+        pprint.pprint(resp)
+
+    def add_config_agent(self,name,account_type,server,user,secret):
+        data = BytesIO()
+        curl_cmd=self.get_curl_cmd('api/config/config-agent')
+        curl_cmd.setopt(pycurl.POST,1)
+        curl_cmd.setopt(pycurl.WRITEFUNCTION, data.write)
+
+        postdata={}
+        postdata['account'] = list()
+
+        account={}
+        account['name'] = name
+        account['account-type'] = account_type
+        account['juju'] = {}
+        account['juju']['user'] = user 
+        account['juju']['secret'] = secret
+        account['juju']['ip-address'] = server
+        postdata['account'].append(account)
+
+        jsondata=json.dumps(postdata)
+        curl_cmd.setopt(pycurl.POSTFIELDS,jsondata)
+        curl_cmd.perform() 
+        curl_cmd.close()
+        resp = json.loads(data.getvalue().decode())
+        pprint.pprint(resp)
+
     def get_ns_instance_list(self):
         data = BytesIO()
         curl_cmd=self.get_curl_cmd('api/running/ns-instance-config')
@@ -212,7 +260,6 @@ class OsmAPI():
 
         if vim_network_prefix is not None:
             for index,vld in enumerate(nsr['nsd']['vld']):
-                print("creating ns mapping!")
                 network_name = vld['name']
                 nsr['nsd']['vld'][index]['vim-network-name'] = '{}-{}'.format(vim_network_prefix,network_name)
 
@@ -362,7 +409,6 @@ class OsmAPI():
                                 table.add_row([inst['instance-id'],inst['op-status'],time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(inst['create-time'])),inst['vnfrs']])
         table.align='l'
         print(table)
-
 
     def list_vnfr(self):
         return self.get_vnfr_catalog()

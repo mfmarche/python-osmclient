@@ -126,6 +126,31 @@ def nsd_delete(ctx,nsd_name):
 def nsd_delete(ctx,vnfd_name):
     ctx.obj.delete_vnfd(vnfd_name)
 
+@cli.command(name='config-agent-list')
+@click.pass_context
+def config_agent_list(ctx):
+    table=PrettyTable(['name','account-type','details'])
+    for account in ctx.obj.get_config_agents():
+      table.add_row([account['name'],account['account-type'],account['juju']])
+    table.align='l'
+    print(table)
+
+@cli.command(name='config-agent-delete')
+@click.argument('name')
+@click.pass_context
+def config_agent_delete(ctx,name):
+    ctx.obj.delete_config_agent(name)
+
+@cli.command(name='config-agent-add')
+@click.argument('name')
+@click.argument('account_type')
+@click.argument('server')
+@click.argument('user')
+@click.argument('secret')
+@click.pass_context
+def config_agent_add(ctx,name,account_type,server,user,secret):
+    ctx.obj.add_config_agent(name,account_type,server,user,secret)
+
 '''
 @cli.command(name='vim-create')
 @click.argument('name')
