@@ -177,6 +177,15 @@ def vim_list(ctx):
     table.align='l'
     print(table)
 
+@cli.command(name='vcs-list')
+@click.pass_context
+def vcs_list(ctx):
+    resp=ctx.obj.get_vcs_info()
+    table=PrettyTable(['component name','state'])
+    for component in resp:
+        table.add_row([component['component_name'],component['state']])
+    table.align='l'
+    print(table)
 
 if __name__ == '__main__':
     cli()

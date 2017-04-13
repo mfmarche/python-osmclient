@@ -130,6 +130,18 @@ class OsmAPI():
           return resp
         return {'vnfd:vnfd': []}
 
+    def get_vcs_info(self):
+        data = BytesIO()
+        curl_cmd=self.get_curl_cmd('api/operational/vcs/info')
+        curl_cmd.setopt(pycurl.HTTPGET,1)
+        curl_cmd.setopt(pycurl.WRITEFUNCTION, data.write)
+        curl_cmd.perform() 
+        curl_cmd.close()
+        if data.getvalue():
+          resp = json.loads(data.getvalue().decode())
+          return resp['rw-base:info']['components']['component_info']
+        return list()
+
     def get_vnfr_catalog(self):
         data = BytesIO()
         curl_cmd=self.get_curl_cmd('v1/api/operational/vnfr-catalog/vnfr')
@@ -369,6 +381,8 @@ class OsmAPI():
         datacenters=resp['rw-launchpad:datacenters']
         if 'ro-accounts' in datacenters:
             for roaccount in datacenters['ro-accounts']:
+                if not 'datacenters' in roaccount:
+                    continue
                 for datacenter in roaccount['datacenters']:
                     if datacenter['name'] == name:
                         return datacenter
