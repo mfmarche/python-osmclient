@@ -1,7 +1,7 @@
 from setuptools import setup,find_packages
 
 setup(
-    name='python-osmclient',
+    name='osmclient',
     version='0.1',
     author='Mike Marchetti',
     author_email='mmarchetti@sandvine.com',
